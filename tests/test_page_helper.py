@@ -4,66 +4,52 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
+from main import WebDriverOptions
 from pages.utils.page_helper import PageHelper
 
 
 class TestPageHelper(unittest.TestCase):
-    WEBDRIVER_OPTIONS = ['--headless=new', '--disable-extensions', '--disable-infobars', '--disable-gpu',
-                         '--disable-notifications']
+    TEST_ROLE = 'importer'
 
     def setUp(self) -> None:
-        options = webdriver.ChromeOptions()
+        self.web_driver_options = WebDriverOptions(wait_time=3)
 
-        for option in self.WEBDRIVER_OPTIONS:
-            options.add_argument(option)
+        self.driver = webdriver.Chrome(options=self.web_driver_options.get_driver_options())
 
-        self.driver = webdriver.Chrome(options=options)
+        self.page_helper = PageHelper(self.driver, self.web_driver_options.get_web_driver_wait_time)
 
-        self.page_helper = PageHelper(self.driver, 3)
+        self.page_helper.load_url(self.TEST_ROLE)
 
     # def tearDown(self):
     #     self.driver.quit()
 
-    def test_load_manufacturers(self):
-        self.page_helper.load_manufacturers()
+    def test_load_role(self):
+        role = 'manufacturer'
+
+        self.page_helper.load_url(role)
 
         role_location = (By.XPATH,
-                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div/span/span/span')
+                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div'
+                         '/span/span/span')
 
-        role = self.page_helper.wait_for_presence(role_location)
+        filter_role = self.page_helper.wait_for_presence(role_location)
 
-        expected_url = 'https://ec.europa.eu/tools/eudamed/#/screen/search-eo?actorTypeCode=refdata.actor-type.manufacturer&submitted=true'
-        expected_role = 'Manufacturer'
-
-        self.assertEqual(self.driver.current_url, expected_url)
-
-        self.assertEqual(role.text, expected_role)
-
-    def test_load_importers(self):
-        self.page_helper.load_importers()
-
-        role_location = (By.XPATH,
-                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div/span/span/span')
-
-        role = self.page_helper.wait_for_presence(role_location)
-
-        expected_url = 'https://ec.europa.eu/tools/eudamed/#/screen/search-eo?actorTypeCode=refdata.actor-type.importer' \
-                       '&submitted=true'
-        expected_role = 'Importer'
+        expected_url = f'https://ec.europa.eu/tools/eudamed/#/screen/search-eo?actorTypeCode=refdata.actor-type.{role}&submitted=true'
 
         self.assertEqual(expected_url, self.driver.current_url)
 
-        self.assertEqual(expected_role, role.text)
+        self.assertEqual(role.capitalize(), filter_role.text)
 
     def test_wait_for_presence(self):
-        self.page_helper.load_importers()
-
         role_location = (By.XPATH,
-                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div/span/span/span')
+                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div'
+                         '/span/span/span')
 
         role = self.page_helper.wait_for_presence(role_location)
 
         self.assertIsNotNone(role)
+
+        self.assertIsInstance(role, WebElement)
 
     def test_wait_for_presence_timeout(self):
         role_location = (By.ID, 'element_id')
@@ -75,10 +61,9 @@ class TestPageHelper(unittest.TestCase):
         self.assertIn(expected_result, role)
 
     def test_scroll_to_element(self):
-        self.page_helper.load_importers()
-
         role_location = (By.XPATH,
-                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div/span/span/span')
+                         '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/search-tags/div'
+                         '/span/span/span')
 
         role = self.page_helper.wait_for_presence(role_location)
 
@@ -89,8 +74,6 @@ class TestPageHelper(unittest.TestCase):
         self.assertTrue(is_in_view)
 
     def test_accept_cookies(self):
-        self.page_helper.load_importers()
-
         cookies_location = (By.XPATH, "//a[@href='#accept']")
 
         cookies_banner = self.page_helper.wait_for_presence(cookies_location)
@@ -104,8 +87,6 @@ class TestPageHelper(unittest.TestCase):
         self.assertNotIsInstance(cookies_banner_after, WebElement)
 
     def test_close_cookies_prompt_after_accept(self):
-        self.page_helper.load_importers()
-
         self.page_helper.accept_cookies()
 
         prompt_close_button_location = (By.CLASS_NAME, 'wt-ecl-message__close')

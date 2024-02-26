@@ -5,24 +5,22 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
+from main import WebDriverOptions
 from pages.browse_page import BrowsePage
 
 
 class TestBrowsePage(unittest.TestCase):
-    WEBDRIVER_OPTIONS = ['--headless=new', '--disable-extensions', '--disable-infobars', '--disable-gpu',
-                         '--disable-notifications']
+    TEST_ROLE = 'importer'
 
     def setUp(self) -> None:
-        options = webdriver.ChromeOptions()
+        self.web_driver_options = WebDriverOptions(wait_time=3)
 
-        for option in self.WEBDRIVER_OPTIONS:
-            options.add_argument(option)
+        self.driver = webdriver.Chrome(options=self.web_driver_options.get_driver_options())
 
-        self.driver = webdriver.Chrome(options=options)
+        self.browse_page = BrowsePage(self.driver, self.web_driver_options.get_web_driver_wait_time)
 
-        self.browse_page = BrowsePage(self.driver, 3)
+        self.browse_page.load_url(self.TEST_ROLE)
 
-        self.browse_page.load_manufacturers()
     #
     # def tearDown(self):
     #     self.driver.quit()
@@ -34,9 +32,11 @@ class TestBrowsePage(unittest.TestCase):
             By.XPATH,
             '/html/body/app-root/eui-block-content/div/ecl-app/div/div/div/app-search-eo/eui-block-content/div')
 
-        table_element = self.browse_page.find_element(self.driver, table_location)
+        table = self.browse_page.find_element(self.driver, table_location)
 
-        self.assertTrue(table_element)
+        self.assertTrue(table)
+
+        self.assertIsInstance(table, WebElement)
 
     def test_find_table_rows(self):
         rows = self.browse_page.find_table_rows()

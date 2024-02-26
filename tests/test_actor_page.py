@@ -3,12 +3,11 @@ from unittest.mock import Mock
 
 from selenium import webdriver
 
+from main import WebDriverOptions
 from pages.actor_page import ActorPage
 
 
 class TestActorPage(unittest.TestCase):
-    WEBDRIVER_OPTIONS = ['--headless=new', '--disable-extensions', '--disable-infobars', '--disable-gpu',
-                         '--disable-notifications']
     TEST_URL = 'https://ec.europa.eu/tools/eudamed/#/screen/search-eo/22938fc4-eadb-459b-9a6a-14defd0275c8'
 
     EXPECTED_DATA = {
@@ -37,16 +36,14 @@ class TestActorPage(unittest.TestCase):
     }
 
     def setUp(self) -> None:
-        options = webdriver.ChromeOptions()
+        self.web_driver_options = WebDriverOptions(wait_time=3)
 
-        for option in self.WEBDRIVER_OPTIONS:
-            options.add_argument(option)
-
-        self.driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Chrome(options=self.web_driver_options.get_driver_options())
 
         self.driver.get(self.TEST_URL)
 
-        self.actor_page = ActorPage(self.driver, 3)
+        self.actor_page = ActorPage(self.driver, self.web_driver_options.get_web_driver_wait_time)
+
     #
     # def tearDown(self):
     #     self.driver.quit()

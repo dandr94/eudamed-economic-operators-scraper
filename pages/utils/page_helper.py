@@ -106,7 +106,7 @@ class PageHelper:
         return element.find_element(*location)
 
     @staticmethod
-    def find_elements(element: Union[WebDriver, WebElement], location: Tuple[str, str]) -> List[WebElement, ...]:
+    def find_elements(element: Union[WebDriver, WebElement], location: Tuple[str, str]) -> List[WebElement]:
         """
             Finds and returns multiple WebElements within the specified element's scope.
 

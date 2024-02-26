@@ -36,7 +36,7 @@ class BrowsePage(PageHelper):
 
         self.wait_for_presence(table_location)
 
-    def find_table_rows(self) -> List[WebElement, ...]:
+    def find_table_rows(self) -> List[WebElement]:
         """
             Finds and returns the rows of the search results table.
 
@@ -139,7 +139,7 @@ class BrowsePage(PageHelper):
 
         return table_dropdown_trigger
 
-    def find_option_for_table_rows(self) -> List[WebElement, ...]:
+    def find_option_for_table_rows(self) -> List[WebElement]:
         """
             Finds and returns the options available for selecting rows per page.
 

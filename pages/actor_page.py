@@ -56,7 +56,7 @@ class ActorPage(PageHelper):
 
         return {key: value}
 
-    def find_actor_dl_elements(self, actor_information_container: WebElement) -> List[WebElement, ...]:
+    def find_actor_dl_elements(self, actor_information_container: WebElement) -> List[WebElement]:
         """
             Finds the dl elements containing actor information.
 
@@ -102,7 +102,7 @@ class ActorPage(PageHelper):
         return actor_information_text_parsed
 
     @staticmethod
-    def parse_text(dl_elements: List[WebElement, ...]) -> Dict[str, str]:
+    def parse_text(dl_elements: List[WebElement]) -> Dict[str, str]:
         """
             Parses text from dl elements and constructs a dictionary.
 

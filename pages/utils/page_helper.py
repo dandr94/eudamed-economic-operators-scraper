@@ -92,7 +92,7 @@ class PageHelper:
         prompt_close_button.click()
 
     @staticmethod
-    def find_element(element: WebElement, location: Tuple[str, str]) -> WebElement:
+    def find_element(element: Union[WebDriver, WebElement], location: Tuple[str, str]) -> WebElement:
         """
             Finds and returns a single WebElement within the specified element's scope.
 
@@ -106,7 +106,7 @@ class PageHelper:
         return element.find_element(*location)
 
     @staticmethod
-    def find_elements(element: WebElement, location: Tuple[str, str]) -> List[WebElement, ...]:
+    def find_elements(element: Union[WebDriver, WebElement], location: Tuple[str, str]) -> List[WebElement, ...]:
         """
             Finds and returns multiple WebElements within the specified element's scope.
 

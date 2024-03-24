@@ -89,7 +89,8 @@ class PageHelper:
 
         prompt_close_button = self.wait_for_presence(prompt_close_button_location)
 
-        prompt_close_button.click()
+        if isinstance(prompt_close_button, WebElement):
+            prompt_close_button.click()
 
     @staticmethod
     def find_element(element: Union[WebDriver, WebElement], location: Tuple[str, str]) -> WebElement:

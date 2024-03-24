@@ -137,4 +137,4 @@ The program saves the data in a JSON format and follows this structure:
 ## Issues
 
 Right now depending on the number of records, the script can run into memory issues. I tried to look where the problem
-is happening, but I didn't find a fix yet, meaning that the longer the app runs, the more memory it requires. 
+is happening, but I didn't find a fix yet, meaning that the more records it scrapes, the more memory it requires. 

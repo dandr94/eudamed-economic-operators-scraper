@@ -168,7 +168,7 @@ class BrowsePage(PageHelper):
         options = self.find_option_for_table_rows()
 
         for option in options:
-            if option.text == num:
+            if int(option.text) == num:
                 option.click()
                 break
 

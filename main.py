@@ -9,22 +9,6 @@ from data_handling import OUTPUT_FILENAME
 
 
 class ScraperOptions:
-    # Options: 10, 25, 50. Changes how many records are there in a table per page
-    ROWS_PER_PAGE = 10
-
-    # Keeping this precise can improve estimated time
-    TOTAL_RECORDS_FOUND = 23153  # Last update: 21.02.2024
-
-    # The time it takes to load a page, used for calculating total estimated time for completion. Change as needed.
-    PAGE_LOAD_TIME = 2
-
-    # How much consecutive exceptions can be raised before the program stops for good.
-    MAX_CONSECUTIVE_EXCEPTIONS = 5
-
-    # The wait time between runs. When the app raises an error, it will try to start the program again after that time
-    # if MAX_CONSECUTIVE_EXCEPTIONS has not reached the maximum
-    WAIT_TIME_BETWEEN_RUNS = 30
-
     # Available roles
     MANUFACTURER_ROLE = 'manufacturer'
     IMPORTER_ROLE = 'importer'
@@ -33,6 +17,23 @@ class ScraperOptions:
     ROLE = 'importer'
 
     ROLE_VALUE_ERROR_MSG = "Invalid role specified."
+    # Options: 10, 25, 50. Changes how many records are there in a table per page
+    ROWS_PER_PAGE = 10
+
+    # TODO: Fetch the total records found everytime the app is starting instead of hard-coding the value
+    # Keeping this precise can improve estimated time
+    TOTAL_RECORDS_FOUND = 7213   # Last update: 24.03.2024
+
+    # The time it takes to load a page (in seconds), used for calculating total estimated time for completion. Change
+    # as needed.
+    PAGE_LOAD_TIME = 2
+
+    # How much consecutive exceptions can be raised before the program stops for good.
+    MAX_CONSECUTIVE_EXCEPTIONS = 5
+
+    # The wait time between runs (in seconds). When the app raises an error, it will try to start the program again
+    # after that time if MAX_CONSECUTIVE_EXCEPTIONS has not reached the maximum
+    WAIT_TIME_BETWEEN_RUNS = 30
 
 
 class WebDriverOptions:
@@ -42,7 +43,7 @@ class WebDriverOptions:
     WEBDRIVER_OPTIONS = ['--headless=new', '--disable-extensions', '--disable-infobars', '--disable-gpu',
                          '--disable-notifications']
 
-    # Depends on the loading time of your page. Adjust as needed or pass a value as argument when you initialize the
+    # Depends on the loading time of your page (in seconds). Adjust as needed or pass a value as argument when you initialize the
     # class.
     WEBDRIVER_WAIT_TIME = 10
 

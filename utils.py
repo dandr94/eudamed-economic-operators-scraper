@@ -54,7 +54,7 @@ class TextFormatter:
 
     def format_message_fail(self, message: str) -> str:
         """
-            Formats a failure message with red color and a cross symbol.
+            Formats a failure message with red color and a cross-symbol.
 
             Args:
                 - message: The failure message to be formatted.
@@ -66,7 +66,7 @@ class TextFormatter:
 
     def format_message_work_in_progress(self, message: str) -> str:
         """
-            Formats a work in progress message with yellow color and an arrow symbol.
+            Formats a work in a progress message with yellow color and an arrow symbol.
 
             Args:
                 - message: The work in progress message to be formatted.

@@ -21,7 +21,7 @@ class ScraperOptions:
     # How much consecutive exceptions can be raised before the program stops for good.
     MAX_CONSECUTIVE_EXCEPTIONS = 5
 
-    # The wait time between runs. When the app raises an error it will try to start the program again after that time
+    # The wait time between runs. When the app raises an error, it will try to start the program again after that time
     # if MAX_CONSECUTIVE_EXCEPTIONS has not reached the maximum
     WAIT_TIME_BETWEEN_RUNS = 30
 
@@ -69,7 +69,8 @@ class Scraper(ScraperOptions):
         self.actor_page = actor_page
         self.message_provider = message_provider
         self.remaining_records = self.TOTAL_RECORDS_FOUND
-        self.existing_data = load_data(OUTPUT_FILENAME)
+        self.existing_data = load_data(
+            OUTPUT_FILENAME)  # TODO: Make filename to be dynamic (depending on the role chosen) instead of hard coding the name
         self.new_data = {}  # TODO: Maybe remove this and pass it to functions
         self.session_time = 0
         self.loop_start_time = 0
@@ -164,7 +165,7 @@ class Scraper(ScraperOptions):
             Processes each row in the table.
 
             Parameters:
-            - table_rows_len: int. Amount of table rows on current page
+            - table_rows_len: int. Number of table rows on the current page
 
             This method iterates through each row in the provided table,
             retrieves the actor ID for each row, checks if the actor ID exists in the existing data,
@@ -172,7 +173,7 @@ class Scraper(ScraperOptions):
             If the actor ID is already present, it logs a message indicating that the record has already been scraped.
         """
 
-        # We need to use this kind of loop because if we iter through the rows as elements it will raise
+        # We need to use this kind of loop because if we iter through the rows, as elements it will raise
         # StaleElementReferenceException
         for i in range(0, table_rows_count - 1):
             actor_id = self.browse_page.find_actor_id(i + 1)
@@ -263,8 +264,8 @@ class Scraper(ScraperOptions):
         """
             Initiates the data scraping process based on the specified role.
 
-            If the role is set to 'manufacturer', loads the manufacturers' data.
-            If the role is set to 'importer', loads the importers' data.
+            If the role is set to 'manufacturer', load the manufacturers' data.
+            If the role is set to 'importer', load the importers' data.
             Raises a ValueError if an invalid role is specified.
         """
 
@@ -272,6 +273,9 @@ class Scraper(ScraperOptions):
 
         self.browse_page.accept_cookies()
 
+        # Right now the close prompt does not exist as 24.03.2024. When I was working on this project, a month ago
+        # there was one. So if they decide to introduce it again, this is a fail-safe; hopefully they introduce it
+        # with the same attribute...
         self.browse_page.close_cookies_prompt_after_accept()
 
         self.browse_page.choose_table_rows_per_page(self.ROWS_PER_PAGE)

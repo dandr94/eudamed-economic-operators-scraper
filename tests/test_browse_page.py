@@ -137,7 +137,7 @@ class TestBrowsePage(unittest.TestCase):
         self.browse_page.accept_cookies()
         self.browse_page.close_cookies_prompt_after_accept()
 
-        num_rows_per_page = "10"
+        num_rows_per_page = 10
 
         self.browse_page.choose_table_rows_per_page(num_rows_per_page)
 
@@ -145,7 +145,7 @@ class TestBrowsePage(unittest.TestCase):
 
         selected_option = self.browse_page.find_element(self.driver, selected_option_location)
 
-        self.assertEqual(selected_option.text, num_rows_per_page)
+        self.assertEqual(int(selected_option.text), num_rows_per_page)
 
     def test_find_actor_id(self):
         row_num = 1

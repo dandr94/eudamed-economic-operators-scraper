@@ -61,7 +61,7 @@ class TestActorPage(unittest.TestCase):
         self.assertIsNotNone(last_updated_info)
         self.assertIn(key, last_updated_info)
 
-        # This will fail if record gets updated
+        # This will fail if the record gets updated
         self.assertEqual(self.EXPECTED_DATA[key], last_updated_info[key])
 
     def test_find_actor_information_container(self):

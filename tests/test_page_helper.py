@@ -86,17 +86,18 @@ class TestPageHelper(unittest.TestCase):
 
         self.assertNotIsInstance(cookies_banner_after, WebElement)
 
-    def test_close_cookies_prompt_after_accept(self):
-        self.page_helper.accept_cookies()
-
-        prompt_close_button_location = (By.CLASS_NAME, 'wt-ecl-message__close')
-
-        prompt_close_button = self.page_helper.wait_for_presence(prompt_close_button_location)
-
-        self.assertIsInstance(prompt_close_button, WebElement)
-
-        self.page_helper.close_cookies_prompt_after_accept()
-
-        prompt_close_button_after = self.page_helper.wait_for_presence(prompt_close_button_location)
-
-        self.assertNotIsInstance(prompt_close_button_after, WebElement)
+    # Old test that is not needed anymore, but maybe the functionality can be introduced again, so it will stay.
+    # def test_close_cookies_prompt_after_accept(self):
+    #     self.page_helper.accept_cookies()
+    #
+    #     prompt_close_button_location = (By.CLASS_NAME, 'wt-ecl-message__close')
+    #
+    #     prompt_close_button = self.page_helper.wait_for_presence(prompt_close_button_location)
+    #
+    #     self.assertIsInstance(prompt_close_button, WebElement)
+    #
+    #     self.page_helper.close_cookies_prompt_after_accept()
+    #
+    #     prompt_close_button_after = self.page_helper.wait_for_presence(prompt_close_button_location)
+    #
+    #     self.assertNotIsInstance(prompt_close_button_after, WebElement)

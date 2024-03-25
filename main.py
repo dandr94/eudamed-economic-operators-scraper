@@ -4,7 +4,7 @@ from selenium import webdriver
 from data_handling import load_data, save_data
 from pages.actor_page import ActorPage
 from pages.browse_page import BrowsePage
-from utils import MessageProvider, TextFormatter
+from utils import MessageProvider, TextFormatter, Logger, AppMessages
 from data_handling import OUTPUT_FILENAME
 
 
@@ -22,7 +22,7 @@ class ScraperOptions:
 
     # TODO: Fetch the total records found everytime the app is starting instead of hard-coding the value
     # Keeping this precise can improve estimated time
-    TOTAL_RECORDS_FOUND = 7213   # Last update: 24.03.2024
+    TOTAL_RECORDS_FOUND = 7213  # Last update: 24.03.2024
 
     # The time it takes to load a page (in seconds), used for calculating total estimated time for completion. Change
     # as needed.
@@ -43,8 +43,8 @@ class WebDriverOptions:
     WEBDRIVER_OPTIONS = ['--headless=new', '--disable-extensions', '--disable-infobars', '--disable-gpu',
                          '--disable-notifications']
 
-    # Depends on the loading time of your page (in seconds). Adjust as needed or pass a value as argument when you initialize the
-    # class.
+    # Depends on the loading time of your page (in seconds). Adjust as needed or pass a value as argument when you
+    # initialize the class.
     WEBDRIVER_WAIT_TIME = 10
 
     def __init__(self, wait_time: int = WEBDRIVER_WAIT_TIME):
@@ -64,11 +64,13 @@ class WebDriverOptions:
 
 
 class Scraper(ScraperOptions):
-    def __init__(self, driver, browse_page: BrowsePage, actor_page: ActorPage, message_provider: MessageProvider):
+    def __init__(self, driver, browse_page: BrowsePage, actor_page: ActorPage, message_provider: MessageProvider,
+                 logger: Logger):
         self.driver = driver
         self.browse_page = browse_page
         self.actor_page = actor_page
         self.message_provider = message_provider
+        self.logger = logger
         self.remaining_records = self.TOTAL_RECORDS_FOUND
         self.existing_data = load_data(
             OUTPUT_FILENAME)  # TODO: Make filename to be dynamic (depending on the role chosen) instead of hard coding the name
@@ -91,25 +93,40 @@ class Scraper(ScraperOptions):
         while consecutive_exceptions < self.MAX_CONSECUTIVE_EXCEPTIONS:
             self.message_provider.app_starting()
 
+            self.logger.log_info(self.message_provider.app_messages.APP_STARTING_MESSAGE)
+
             try:
                 self.start_scraping_data()
 
-                self.message_provider.scrapping_completed_msg(OUTPUT_FILENAME)
+                self.message_provider.scraping_completed_msg(OUTPUT_FILENAME)
+
+                self.logger.log_info(self.message_provider.app_messages.SCRAPING_COMPLETED_MESSAGE)
 
             except KeyboardInterrupt:
                 self.message_provider.keyboard_interruption_msg()
+
+                self.logger.log_error(self.message_provider.app_messages.KEYBOARD_INTERRUPTION_MESSAGE)
+
                 break
 
             except Exception as e:
                 consecutive_exceptions += 1
+
                 self.message_provider.unexpected_error_msg(e)
+
+                self.logger.log_error(
+                    self.message_provider.app_messages.UNEXPECTED_ERROR_MESSAGE.format(exception=str(e)))
 
             finally:
                 self.cleanup()
 
+                self.logger.log_info('Cleaning up resources...')
+
             # If scraping failed, wait before attempting again
             if consecutive_exceptions > 0:
                 time.sleep(self.WAIT_TIME_BETWEEN_RUNS)
+
+                self.logger.log_info(f'Waiting {self.WAIT_TIME_BETWEEN_RUNS}s before attempting again.')
 
     def cleanup(self) -> None:
         """
@@ -121,6 +138,8 @@ class Scraper(ScraperOptions):
         if self.driver:
             self.driver.quit()
 
+            self.logger.log_info('Cleaning up the driver resources.')
+
     def go_to_next_page_if_possible(self) -> bool:
         """
         Go to the next page if available.
@@ -129,9 +148,11 @@ class Scraper(ScraperOptions):
 
         if self.browse_page.is_button_disabled(next_page_button):
             return False
-        else:
-            next_page_button.click()
-            return True
+
+        # Why is this here
+        next_page_button.click()
+
+        return True
 
     def save_existing_data(self) -> None:
         """
@@ -141,7 +162,9 @@ class Scraper(ScraperOptions):
 
         save_data(self.existing_data, OUTPUT_FILENAME)
 
-        self.message_provider.saved_current_scrapped_data()
+        self.message_provider.saved_current_scraped_data()
+
+        self.logger.log_info(self.message_provider.app_messages.SAVED_CURRENT_SCRAPED_DATA)
 
     def display_completion_time(self) -> None:
         """
@@ -180,7 +203,7 @@ class Scraper(ScraperOptions):
             actor_id = self.browse_page.find_actor_id(i + 1)
 
             if actor_id in self.existing_data:
-                self.message_provider.record_already_scrapped(actor_id)
+                self.message_provider.record_already_scraped(actor_id)
                 continue
 
             self.scrape_actor_page(i, actor_id)
@@ -296,8 +319,12 @@ if __name__ == "__main__":
 
     test_formatter = TextFormatter()
 
-    message_provider = MessageProvider(test_formatter)
+    logger = Logger()
 
-    scraper = Scraper(driver, browse_page, actor_page, message_provider)
+    app_messages = AppMessages()
+
+    message_provider = MessageProvider(test_formatter, app_messages)
+
+    scraper = Scraper(driver, browse_page, actor_page, message_provider, logger)
 
     scraper.run()

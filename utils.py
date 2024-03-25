@@ -118,6 +118,21 @@ class Logger:
         self.logger.warning(message)
 
 
+class AppMessages:
+    APP_STARTING_MESSAGE = 'The scraping has now started...'
+    WORKING_ON_URL_MESSAGE = 'Working on record with URL: {url}...'
+    COMPLETED_RECORD_MESSAGE = 'Successfully scraped the record with URL: {url}!'
+    SAVED_CURRENT_SCRAPED_DATA = 'Saving collected data. Continuing to the next page...'
+    TIME_ELAPSED_MESSAGE = 'Time elapsed: {elapsed_time_formatted}'
+    AVERAGE_TIME_UNTIL_COMPLETION_MESSAGE = 'Estimated time until completion: {days} day(s), {hours} hour(s), ' \
+                                            '{minutes} minute(s), {seconds} second(s)'
+    REMAINING_RECORDS_MESSAGE = 'Remaining records: {remaining_records}...'
+    KEYBOARD_INTERRUPTION_MESSAGE = 'Scraping interrupted by user!'
+    UNEXPECTED_ERROR_MESSAGE = 'Unexpected error has occurred: {exception}'
+    SCRAPING_COMPLETED_MESSAGE = 'Scraping has successfully finished! Data has been saved to {filename}.'
+    RECORD_ALREADY_SCRAPED_MESSAGE = 'Record with actor ID {actor_id} already scraped. Continuing to the next one...'
+
+
 class MessageProvider:
     """
         MessageProvider class for generating and displaying messages during scraping.
@@ -130,8 +145,9 @@ class MessageProvider:
             - text_formatter: TextFormatter instance for formatting text messages.
         """
 
-    def __init__(self, text_formatter: TextFormatter):
+    def __init__(self, text_formatter: TextFormatter, app_messages: AppMessages):
         self.text_formatter = text_formatter
+        self.app_messages = app_messages
 
     def timed_custom_message(self, msg: str, color: str) -> str:
         """
@@ -150,7 +166,8 @@ class MessageProvider:
         """
             Displays a message indicating the start of scraping.
         """
-        msg = 'The scrapping has now started...'
+
+        msg = self.app_messages.APP_STARTING_MESSAGE
 
         print(self.timed_custom_message(msg, 'green'))
 
@@ -161,7 +178,7 @@ class MessageProvider:
             Args:
                 - url: The URL of the record being worked on.
         """
-        msg = f'Working on record with URL: {url}...'
+        msg = self.app_messages.WORKING_ON_URL_MESSAGE.format(url=url)
 
         print(self.timed_custom_message(msg, 'yellow'))
 
@@ -172,15 +189,16 @@ class MessageProvider:
             Args:
                 - url: The URL of the completed record.
         """
-        msg = f'Successfully scrapped the record with URL: {url}!'
+
+        msg = self.app_messages.COMPLETED_RECORD_MESSAGE.format(url=url)
 
         print(self.timed_custom_message(msg, 'green'))
 
-    def saved_current_scrapped_data(self) -> None:
+    def saved_current_scraped_data(self) -> None:
         """
             Displays a message indicating the saving of scraped data and proceeding to the next page.
         """
-        msg = 'Saving collected data. Continuing to the next page...'
+        msg = self.app_messages.SAVED_CURRENT_SCRAPED_DATA
 
         print(self.timed_custom_message(msg, 'green'))
 
@@ -195,7 +213,7 @@ class MessageProvider:
 
         elapsed_time_formatted = format_elapsed_time(elapsed_time_seconds)
 
-        msg = f'Time elapsed: {elapsed_time_formatted}'
+        msg = self.app_messages.TIME_ELAPSED_MESSAGE.format(elapsed_time_formatted=elapsed_time_formatted)
 
         print(self.timed_custom_message(msg, 'yellow'))
 
@@ -211,8 +229,8 @@ class MessageProvider:
         """
         days, hours, minutes, seconds = calculate_average_time_until_completion(records_remaining, records_per_page,
                                                                                 time_per_page)
-
-        msg = f'Estimated time until completion: {days} day(s), {hours} hour(s), {minutes} minute(s), {seconds} second(s)'
+        msg = self.app_messages.AVERAGE_TIME_UNTIL_COMPLETION_MESSAGE.format(days=days, hours=hours, minutes=minutes,
+                                                                             seconds=seconds)
 
         print(self.timed_custom_message(msg, 'yellow'))
 
@@ -223,7 +241,7 @@ class MessageProvider:
             Args:
                 - remaining_records: The number of remaining records.
         """
-        msg = f'Remaining records: {remaining_records}...'
+        msg = self.app_messages.REMAINING_RECORDS_MESSAGE.format(remaining_records=remaining_records)
 
         print(self.timed_custom_message(msg, 'yellow'))
 
@@ -231,7 +249,7 @@ class MessageProvider:
         """
             Displays a message indicating scraping interruption by the user.
         """
-        msg = 'Scrapping interrupted by user!'
+        msg = self.app_messages.KEYBOARD_INTERRUPTION_MESSAGE
 
         print(self.timed_custom_message(msg, 'red'))
 
@@ -242,29 +260,29 @@ class MessageProvider:
             Args:
                 - exception: The exception object representing the error.
         """
-        msg = f'Unexpected error has occurred: {str(exception)}'
+        msg = self.app_messages.UNEXPECTED_ERROR_MESSAGE.format(exception=str(exception))
 
         print(self.timed_custom_message(msg, 'red'))
 
-    def scrapping_completed_msg(self, filename: str) -> None:
+    def scraping_completed_msg(self, filename: str) -> None:
         """
             Displays a message indicating the completion of scraping and the saved file.
 
             Args:
                 - filename: The name of the file where the data is saved.
         """
-        msg = f'Scrapping has successfully finished! Data has been saved to {filename}.'
+        msg = self.app_messages.SCRAPING_COMPLETED_MESSAGE.format(filename=filename)
 
         print(self.timed_custom_message(msg, 'green'))
 
-    def record_already_scrapped(self, actor_id: str) -> None:
+    def record_already_scraped(self, actor_id: str) -> None:
         """
             Displays a message indicating a record with a specific actor ID has already been scraped.
 
             Args:
                 - actor_id: The ID of the actor whose record has already been scraped.
         """
-        msg = f'Record with actor ID {actor_id} already scrapped. Continuing to the next one...'
+        msg = self.app_messages.RECORD_ALREADY_SCRAPED_MESSAGE.format(actor_id=actor_id)
 
         print(self.timed_custom_message(msg, 'yellow'))
 

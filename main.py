@@ -5,7 +5,6 @@ from data_handling import load_data, save_data
 from pages.actor_page import ActorPage
 from pages.browse_page import BrowsePage
 from utils import MessageProvider, TextFormatter, Logger, AppMessages
-from data_handling import OUTPUT_FILENAME
 
 
 class ScraperOptions:
@@ -19,8 +18,6 @@ class ScraperOptions:
     ROLE_VALUE_ERROR_MSG = "Invalid role specified."
     # Options: 10, 25, 50. Changes how many records are there in a table per page
     ROWS_PER_PAGE = 10
-
-    TOTAL_RECORDS_FOUND = 0  # It will automatically populate on startup
 
     # The time it takes to load a page (in seconds), used for calculating total estimated time for completion. Change
     # as needed.
@@ -69,9 +66,10 @@ class Scraper(ScraperOptions):
         self.actor_page = actor_page
         self.message_provider = message_provider
         self.logger = logger
-        self.remaining_records = self.TOTAL_RECORDS_FOUND
-        self.existing_data = load_data(
-            OUTPUT_FILENAME)  # TODO: Make filename to be dynamic (depending on the role chosen) instead of hard coding the name
+        self.total_records_found = 0
+        self.remaining_records = self.total_records_found
+        self.filename = f"{self.ROLE}s_data.json"
+        self.existing_data = load_data(self.filename)
         self.new_data = {}  # TODO: Maybe remove this and pass it to functions
         self.session_time = 0
         self.loop_start_time = 0
@@ -96,7 +94,7 @@ class Scraper(ScraperOptions):
             try:
                 self.start_scraping_data()
 
-                self.message_provider.scraping_completed_msg(OUTPUT_FILENAME)
+                self.message_provider.scraping_completed_msg(self.filename)
 
                 self.logger.log_info(self.message_provider.app_messages.SCRAPING_COMPLETED_MESSAGE)
 
@@ -158,7 +156,7 @@ class Scraper(ScraperOptions):
         """
         self.existing_data.update(self.new_data)
 
-        save_data(self.existing_data, OUTPUT_FILENAME)
+        save_data(self.existing_data, self.filename)
 
         self.message_provider.saved_current_scraped_data()
 
@@ -258,7 +256,7 @@ class Scraper(ScraperOptions):
 
             table_rows = self.browse_page.find_table_rows()
 
-            self.remaining_records = self.TOTAL_RECORDS_FOUND - len(self.existing_data)
+            self.remaining_records = self.total_records_found - len(self.existing_data)
 
             self.process_table_rows(len(table_rows))
 
@@ -302,7 +300,7 @@ class Scraper(ScraperOptions):
 
         self.browse_page.choose_table_rows_per_page(self.ROWS_PER_PAGE)
 
-        self.TOTAL_RECORDS_FOUND = self.browse_page.find_total_records()
+        self.total_records_found = self.browse_page.find_total_records()
 
         self.scrape_pages()
 

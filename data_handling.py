@@ -1,8 +1,6 @@
 import json
 from typing import List, Dict
 
-OUTPUT_FILENAME = 'manufacturers_data_test.json'
-
 
 def load_data(filename: str) -> Dict[str, str]:
     """

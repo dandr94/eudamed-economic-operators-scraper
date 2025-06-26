@@ -9,6 +9,9 @@ IMPORTERS</u> only. It utilizes Selenium WebDriver to navigate through web pages
 It saves Actor information meaning - Actor identification, Actor address and Actor contact details.
 It does not save Competent Authority information.
 
+## Preview
+![PREVIEW](preview.png)
+
 ## Tools:
 
 * Language: Python

@@ -13,16 +13,14 @@ class ScraperOptions:
     MANUFACTURER_ROLE = 'manufacturer'
     IMPORTER_ROLE = 'importer'
 
-    # Change this to "importer" to extract importer data
+    # Possible roles: manufacturer, importer
     ROLE = 'importer'
 
     ROLE_VALUE_ERROR_MSG = "Invalid role specified."
     # Options: 10, 25, 50. Changes how many records are there in a table per page
     ROWS_PER_PAGE = 10
 
-    # TODO: Fetch the total records found everytime the app is starting instead of hard-coding the value
-    # Keeping this precise can improve estimated time
-    TOTAL_RECORDS_FOUND = 7213  # Last update: 24.03.2024
+    TOTAL_RECORDS_FOUND = 0  # It will automatically populate on startup
 
     # The time it takes to load a page (in seconds), used for calculating total estimated time for completion. Change
     # as needed.
@@ -40,7 +38,7 @@ class WebDriverOptions:
     # Options you can pass to configurate your webdriver. '--headless=new'
     # More info: https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
 
-    WEBDRIVER_OPTIONS = ['--headless=new', '--disable-extensions', '--disable-infobars', '--disable-gpu',
+    WEBDRIVER_OPTIONS = ['headless', '--disable-extensions', '--disable-infobars', '--disable-gpu',
                          '--disable-notifications']
 
     # Depends on the loading time of your page (in seconds). Adjust as needed or pass a value as argument when you
@@ -303,6 +301,8 @@ class Scraper(ScraperOptions):
         self.browse_page.close_cookies_prompt_after_accept()
 
         self.browse_page.choose_table_rows_per_page(self.ROWS_PER_PAGE)
+
+        self.TOTAL_RECORDS_FOUND = self.browse_page.find_total_records()
 
         self.scrape_pages()
 

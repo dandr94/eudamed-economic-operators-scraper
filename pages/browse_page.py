@@ -36,6 +36,21 @@ class BrowsePage(PageHelper):
 
         self.wait_for_presence(table_location)
 
+    def find_total_records(self) -> int:
+        records_location = (By.CLASS_NAME, 'nb-records')
+
+        self.wait_for_presence(records_location)
+
+        records_el = self.find_element(self.driver, records_location)
+
+        records_el_text = self.extract_text(records_el)
+
+        records_el_split = records_el_text.split()
+
+        records = int(records_el_split[0])
+
+        return records
+
     def find_table_rows(self) -> List[WebElement]:
         """
             Finds and returns the rows of the search results table.
